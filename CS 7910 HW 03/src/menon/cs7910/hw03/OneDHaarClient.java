@@ -98,7 +98,34 @@ public class OneDHaarClient {
 		}
 		
 	}
+	
+	private static void testInPlaceInverseFHWT(double[] sample) {
+		
+		//Print the input sample
+		System.out.print(NEW_LINE + ORIGINAL_SAMPLE_LABEL);
+		for (double doubleValue : sample) {
+			System.out.print(doubleValue + " ");
+		}
+		
+		//Run the transform
+		try {
+			OneDHaar.inPlaceInverseFastHaarWaveletTransform(sample);
+			
+			//Get the transform
+			double[] transform = OneDHaar.getInPlaceInverseFastHaarWaveletTransform();
+			
+			//Print the transform values
+			System.out.print(NEW_LINE + IN_PLACE_INVERSE_FHWT_LABEL);
+			for (double doubleValue : transform) {
+				System.out.print(doubleValue + " ");
+			}
 
+		} catch (Exception e) {
+			System.err.println("Exception thrown when trying to run in place inverse FHWT");
+			e.printStackTrace();
+		}
+		
+	}
 	
 	public static void main(String[] args) {
 		
@@ -114,6 +141,8 @@ public class OneDHaarClient {
         double[] sample_01 = {3, 1, 0, 4, 8, 6, 9, 9};
         double[] sample_02 = {4.0, -1.0, 2.0, -3.0};
         double[] sample_03 = {5.0, -3.0, 0.0, -1.0, 1.0, -2.0, 1.0, 0.0};
+        double[] sample_04 = {4.0, 2.0, -1.0, -3.0};
+        double[] sample_05 = {5.0, 1.0, 0.0, -2.0, -3.0, 1.0, -1.0, 0.0};
         
         testOrderedFHWT(sample_00, truncateData);
         testOrderedFHWT(sample_01, truncateData);
@@ -124,6 +153,9 @@ public class OneDHaarClient {
         testOrderedInverseFHWT(sample_02);
         testOrderedInverseFHWT(sample_03);
 
+        testInPlaceInverseFHWT(sample_04);
+        testInPlaceInverseFHWT(sample_05);
+        
 	}
 
 }

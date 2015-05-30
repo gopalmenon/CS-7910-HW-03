@@ -192,20 +192,34 @@ public class OneDHaar {
 			throw new Exception("In Place Inverse Fast Haar Wavelet Transform can only be done on a sample that is an integral power of 2.");
 		}
 		
-		double[] transform = null;
+		double [] sampleCopy = Arrays.copyOf(sample, sample.length);
+
+		int numberOfSweeps = Double.valueOf(Math.log10(sample.length)/Math.log10(2.0)).intValue();
+		int gap = Double.valueOf(Math.pow(2, numberOfSweeps - 1)).intValue();
+		int j = 2 * gap;
+		int m  = 1;
+		double firstStepCoeff = 0.0, secondStepCoeff = 0.0;
 
 		//Do number of sweeps equal to the log base 2 of the sample size
-		int numberOfSweeps = Double.valueOf(Math.log10(sample.length)/Math.log10(2.0)).intValue();
 		for (int sweepCounter = 0; sweepCounter < numberOfSweeps; ++sweepCounter) {
 		
+			for (int k = 0; k <= m - 1; ++k) {
 		
-		
+				firstStepCoeff = sampleCopy[j * k] + sampleCopy[j * k + gap];
+				secondStepCoeff = sampleCopy[j * k] - sampleCopy[j * k + gap];
 			
+				sampleCopy[j * k] = firstStepCoeff;
+				sampleCopy[j * k + gap] = secondStepCoeff;
+				
+			}
 			
+			j = gap;
+			gap /= 2;
+			m *= 2;
 			
 		}
 
-		inPlaceInverseFastHaarWaveletTransform = transform;
+		inPlaceInverseFastHaarWaveletTransform = sampleCopy;
 		inPlaceInverseTransformComplete = true;		
 		
 	}
