@@ -141,21 +141,97 @@ public class OneDHaar {
 	/**
 	 * Generate the ordered inverse Haar wavelet transform in an array
 	 * @param sample
+	 * @throws Exception 
 	 */
-	public static void orderedInverseFastHaarWaveletTransform(double[] sample) {
+	public static void orderedInverseFastHaarWaveletTransform(double[] sample) throws Exception {
 		
+		if (!isPowerOfTwo(sample.length)) {
+			throw new Exception("Ordered Inverse Fast Haar Wavelet Transform can only be done on a sample that is an integral power of 2.");
+		}
+		
+		double [] sampleCopy = Arrays.copyOf(sample, sample.length), coefficients = null;;
+		double firstStepCoeff = 0.0, secondStepCoeff = 0.0;
+		int gap = 0, j = 0, numberOfSweeps = Double.valueOf(Math.log10(sample.length)/Math.log10(2.0)).intValue();
+		
+		for (int coefficientCounter = 1; coefficientCounter <= numberOfSweeps; ++coefficientCounter) {
+			
+			gap = Double.valueOf(Math.pow(2, coefficientCounter - 1)).intValue();
+			j = 0;
+			
+			coefficients = new double[2 * gap];
+			
+			for (int i = 0; i < gap; ++i) {
+				
+				firstStepCoeff = sampleCopy[i] + sampleCopy[gap + i];
+				secondStepCoeff = sampleCopy[i] - sampleCopy[gap + i];
+				coefficients[j] = firstStepCoeff;
+				coefficients[j + 1] = secondStepCoeff;
+				
+				j += 2;
+			}
+			
+			for (int counter = 0; counter < coefficients.length; ++ counter) {
+				sampleCopy[counter] = coefficients[counter];
+			}
+			
+		}
+		
+		orderedInverseFastHaarWaveletTransform = sampleCopy;
+		orderedInverseTransformComplete = true;
 		
 	} 
 	
 	/**
 	 * Generate the in place inverse Haar wavelet transform in an array
 	 * @param sample
+	 * @throws Exception 
 	 */
-	public static void inPlaceInverseFastHaarWaveletTransform(double[] sample) {
+	public static void inPlaceInverseFastHaarWaveletTransform(double[] sample) throws Exception {
+		
+		if (!isPowerOfTwo(sample.length)) {
+			throw new Exception("In Place Inverse Fast Haar Wavelet Transform can only be done on a sample that is an integral power of 2.");
+		}
+		
+		double[] transform = null;
+
+		//Do number of sweeps equal to the log base 2 of the sample size
+		int numberOfSweeps = Double.valueOf(Math.log10(sample.length)/Math.log10(2.0)).intValue();
+		for (int sweepCounter = 0; sweepCounter < numberOfSweeps; ++sweepCounter) {
 		
 		
 		
+			
+			
+			
+		}
+
+		inPlaceInverseFastHaarWaveletTransform = transform;
+		inPlaceInverseTransformComplete = true;		
 		
+	}
+	
+	
+	public static double[] getOrderedInverseFastHaarWaveletTransform() throws Exception {
+		
+		if (!orderedInverseTransformComplete) {
+			throw new Exception("Ordered Inverse Fast Haar Wavelet Transform has not been done yet.");
+		}
+		
+		//Return a copy so as to protect the class variable
+		return Arrays.copyOf(orderedInverseFastHaarWaveletTransform, orderedInverseFastHaarWaveletTransform.length);
+
+	}
+	
+	
+	public static double[] getInPlaceInverseFastHaarWaveletTransform() throws Exception {
+		
+		if (!inPlaceInverseTransformComplete) {
+			throw new Exception("In Place Inverse Fast Haar Wavelet Transform has not been done yet.");
+		}
+		
+		//Return a copy so as to protect the class variable
+		return Arrays.copyOf(inPlaceInverseFastHaarWaveletTransform, inPlaceInverseFastHaarWaveletTransform.length);
+
 	}
 	
 	/**
@@ -197,10 +273,9 @@ public class OneDHaar {
 		
 		int sampleSize = sample.length;
 		double sampleSizeLg = Math.log10(sampleSize)/Math.log10(2.0);
-		int sampleSizeLgInt = Double.valueOf(sampleSizeLg).intValue();
 		
 		//Return input if already the size is an integral power of 2
-		if (sampleSizeLgInt == sampleSizeLg) {
+		if (isPowerOfTwo(sample.length)) {
 			return Arrays.copyOf(sample, sample.length);
 		}
 		
@@ -221,5 +296,22 @@ public class OneDHaar {
 		
 		return returnValue;
 		
+	}
+	
+	/**
+	 * @param sampleSize
+	 * @return true if input is an integral power of 2
+	 */
+	private static boolean isPowerOfTwo(int sampleSize) {
+		
+		double sampleSizeLg = Math.log10(sampleSize)/Math.log10(2.0);
+		int sampleSizeLgInt = Double.valueOf(sampleSizeLg).intValue();
+		
+		if (sampleSizeLgInt == sampleSizeLg) {
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 }
