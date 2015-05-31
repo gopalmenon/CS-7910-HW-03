@@ -186,7 +186,7 @@ public class OneDHaar {
 	 * @param sample
 	 * @throws Exception 
 	 */
-	public static void inPlaceInverseFastHaarWaveletTransform(double[] sample) throws Exception {
+	public static void inPlaceFastInverseHaarWaveletTransform(double[] sample) throws Exception {
 		
 		if (!isPowerOfTwo(sample.length)) {
 			throw new Exception("In Place Inverse Fast Haar Wavelet Transform can only be done on a sample that is an integral power of 2.");
@@ -246,6 +246,16 @@ public class OneDHaar {
 		//Return a copy so as to protect the class variable
 		return Arrays.copyOf(inPlaceInverseFastHaarWaveletTransform, inPlaceInverseFastHaarWaveletTransform.length);
 
+	}
+	
+	public static void displaySample(double[] sample) {
+		
+		System.out.print("Sample: ");
+		for (double sampleValue : sample) {
+			System.out.print(sampleValue);
+			System.out.print('\t');
+		}
+		
 	}
 	
 	/**

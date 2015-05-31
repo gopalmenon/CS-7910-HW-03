@@ -111,7 +111,7 @@ public class OneDHaarEdgeDetection {
 	public final static double[] NO_EDGE_PIX = { NO_EDGE_MARK, NO_EDGE_MARK, NO_EDGE_MARK };
 	public final static double[] YES_EDGE_PIX = { EDGE_MARK, EDGE_MARK, EDGE_MARK };
 	
-	public static void markRowBasedHillTops(String in_file, String out_file) {
+	public static Mat markRowBasedHillTops(String in_file, String out_file) {
 		Mat orig = Highgui.imread(SOURCE_PATH + in_file);
 		Mat marked = Highgui.imread(SOURCE_PATH + in_file);
         System.out.println(SOURCE_PATH + in_file);
@@ -164,13 +164,12 @@ public class OneDHaarEdgeDetection {
 			System.out.println();
 		}
 		
-		Highgui.imwrite(SOURCE_PATH +  out_file, marked);
 		orig.release();
-		marked.release();
+		return marked;
 	}
 	
 	
-	public static void markColumnBasedHillTops(String in_file, String out_file) {
+	public static Mat markColumnBasedHillTops(String in_file, String out_file) {
 		Mat orig = Highgui.imread(SOURCE_PATH + in_file);
 		Mat marked = Highgui.imread(SOURCE_PATH + in_file);
         System.out.println(SOURCE_PATH + in_file);
@@ -223,14 +222,48 @@ public class OneDHaarEdgeDetection {
 			System.out.println();
 		}
 		
-		Highgui.imwrite(SOURCE_PATH +  out_file, marked);
 		orig.release();
-		marked.release();
+		return marked;
 	}
+	
+	public static void markColumnAndRowBasedHillTops(String in_file, String out_file) {
+		
+		Mat rowBasedMatrix = markRowBasedHillTops(in_file, out_file);
+		Mat columnBasedMatrix = markColumnBasedHillTops(in_file, out_file);
+		
+		Mat orig = Highgui.imread(SOURCE_PATH + in_file);
+		Mat output = Highgui.imread(SOURCE_PATH + in_file);
+		final int num_rows = orig.rows();
+		final int num_cols = orig.cols();
+
+		System.out.println("Creating combined image.");
+		
+		for(int col = 0; col < num_cols; col++) {
+			System.out.println();
+			for(int row = 0; row < num_rows; row++) {
+				if (rowBasedMatrix.get(row, col)[0] == EDGE_MARK || columnBasedMatrix.get(row, col)[0] == EDGE_MARK) {
+					output.put(row, col, YES_EDGE_PIX);
+				} else {
+					output.put(row, col, NO_EDGE_PIX);
+				}
+				System.out.print(output.get(row, col)[0] + "\t");
+			}
+		}
+
+		Highgui.imwrite(SOURCE_PATH +  out_file, output);
+		output.release();
+
+	}
+	
 
 	public static void main(String[] args) {
-		markRowBasedHillTops("ornament_01.jpg", "ornament_01_edges_row_based.jpg");
-		markColumnBasedHillTops("ornament_01.jpg", "ornament_01_edges_col_based.jpg");
+		
+		if (args.length != 2) {
+			System.err.println("Need two parameters - In file name and out file name");
+		} else {
+			markColumnAndRowBasedHillTops(args[0], args[1]);
+		}
+		
 	}
 
 }
